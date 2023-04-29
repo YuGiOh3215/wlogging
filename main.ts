@@ -2,9 +2,24 @@
 // from serial import *
 // from threaded import *
 // from logging import *
+datalogger.onLogFull(function on_log_full() {
+    
+    TurnLoggingOnOff = true
+    basic.showIcon(IconNames.Skull)
+})
 input.onButtonPressed(Button.A, function on_button_pressed_a() {
     
     TurnLoggingOnOff = !TurnLoggingOnOff
+})
+input.onButtonPressed(Button.AB, function on_button_pressed_ab() {
+    
+    if (input.logoIsPressed()) {
+        basic.showIcon(IconNames.No)
+        datalogger.deleteLog()
+        TurnLoggingOnOff = true
+        datalogger.setColumnTitles("wd", "wd", "stc", "tc", "hmd", "prs")
+    }
+    
 })
 let current_WindDirection_List = ""
 let current_WindSpeed = 0
@@ -15,6 +30,7 @@ let szLine = ""
 serial.redirect(SerialPin.P15, SerialPin.P14, BaudRate.BaudRate115200)
 weatherbit.startWindMonitoring()
 weatherbit.startWeatherMonitoring()
+datalogger.setColumnTitles("wd", "wd", "stc", "tc", "hmd", "prs")
 TurnLoggingOnOff = false
 /** Note: If "???" is displayed, direction is unknown! */
 let doLog = false

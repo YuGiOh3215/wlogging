@@ -7,13 +7,27 @@ from tkinter import *
 from time import *
 #from logging import *
 
-
+def on_log_full():
+    global TurnLoggingOnOff
+    TurnLoggingOnOff = True
+    basic.show_icon(IconNames.SKULL)
+datalogger.on_log_full(on_log_full)
 
 def on_button_pressed_a():
     global TurnLoggingOnOff
     TurnLoggingOnOff = not (TurnLoggingOnOff)
 input.on_button_pressed(Button.A, on_button_pressed_a)
 
+def on_button_pressed_ab():
+    global TurnLoggingOnOff
+    if input.logo_is_pressed():
+        basic.show_icon(IconNames.NO)
+        datalogger.delete_log()
+        TurnLoggingOnOff = True
+        datalogger.set_column_titles("wd", 'wd','stc', 'tc', 'hmd', 'prs')
+input.on_button_pressed(Button.AB, on_button_pressed_ab)
+                                           
+                                           
 current_WindDirection_List = ""
 current_WindSpeed = 0
 tempC = 0
@@ -21,9 +35,11 @@ TurnLoggingOnOff = True
 szLine = ""
 
 #serial.redirect_to_usb()
+
 serial.redirect(SerialPin.P15, SerialPin.P14, BaudRate.BAUD_RATE115200)
 weatherbit.start_wind_monitoring()
 weatherbit.start_weather_monitoring()
+datalogger.set_column_titles("wd", 'wd','stc', 'tc', 'hmd', 'prs')
 TurnLoggingOnOff = False
 """
 
