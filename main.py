@@ -7,6 +7,25 @@ from tkinter import *
 from time import *
 #from logging import *
 
+def showLoggingLED():
+    basic.show_leds("""
+        . . . . .
+        . . . . #
+        . . . # .
+        # . # . .
+        . # . . .
+    """)
+
+
+def showNotLoggingLED():
+    basic.show_leds("""
+        # . . . #
+        . # . # .
+        . . # . .
+        . # . # .
+        # . . . #
+    """)
+
 def on_log_full():
     global TurnLoggingOnOff
     TurnLoggingOnOff = True
@@ -33,10 +52,15 @@ current_WindSpeed = 0
 tempC = 0
 TurnLoggingOnOff = True
 szLine = ""
+doLog = False
+iCount = 0
+idefaultLogInterv = 5000
+iHighLogInterv = 1000
 
+iLogInterval = idefaultLogInterv
 #serial.redirect_to_usb()
 
-serial.redirect(SerialPin.P15, SerialPin.P14, BaudRate.BAUD_RATE115200)
+serial.redirect(SerialPin.P15, SerialPin.P14, BaudRate.BAUD_RATE9600)
 weatherbit.start_wind_monitoring()
 weatherbit.start_weather_monitoring()
 datalogger.set_column_titles("wd", 'wd','stc', 'tc', 'hmd', 'prs')
@@ -46,36 +70,31 @@ TurnLoggingOnOff = False
 Note: If "???" is displayed, direction is unknown!
 
 """
-doLog = False
-iCount = 0
+
 
 def on_forever():
     global current_WindSpeed, current_WindDirection_List
-    global tempC, szLine
+    global tempC, szLine, iLogInterval, iHighLogInterv, idefaultLogInterv
 
     # -------- wind --------
     current_WindSpeed = weatherbit.wind_speed() * 3600 / 1000
 
     if (current_WindSpeed > 0.5):
         doLog = True
+        iLogInterval = iHighLogInterv
     elif (iCount < 20):
         iCount = iCount + 1
     else:
         doLog = False
+        iLogInterval = idefaultLogInterv
     
     if TurnLoggingOnOff == True:
         doLog = False
+        iLogInterval = idefaultLogInterv
      
     if doLog:
-        basic.show_leds("""
-            . . . . .
-                        . . . . #
-                        . . . # .
-                        # . # . .
-                        . # . . .
-        """)
     
-    
+        showLoggingLED()
         current_WindDirection_List = weatherbit.wind_direction()
 
         # -------- temperature --------
@@ -106,15 +125,10 @@ def on_forever():
         serial.write_line(szLine)
         
     else:
-        basic.show_leds("""
-            # . . . #
-                        . # . # .
-                        . . # . .
-                        . # . # .
-                        # . . . #
-        """)
+        showNotLoggingLED()
         
-    basic.pause(5000)
+        
+    basic.pause(iLogInterval)
     
 while True:
     on_forever()
