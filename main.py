@@ -17,14 +17,14 @@ input.on_button_pressed(Button.A, on_button_pressed_a)
 current_WindDirection_List = ""
 current_WindSpeed = 0
 tempC = 0
-TurnLoggingOnOff = False
+TurnLoggingOnOff = True
 szLine = ""
 
 #serial.redirect_to_usb()
 serial.redirect(SerialPin.P15, SerialPin.P14, BaudRate.BAUD_RATE115200)
 weatherbit.start_wind_monitoring()
 weatherbit.start_weather_monitoring()
-TurnLoggingOnOff = True
+TurnLoggingOnOff = False
 """
 
 Note: If "???" is displayed, direction is unknown!
@@ -40,7 +40,7 @@ def on_forever():
     # -------- wind --------
     current_WindSpeed = weatherbit.wind_speed() * 3600 / 1000
 
-    if (current_WindSpeed > 5.0):
+    if (current_WindSpeed > 0.5):
         doLog = True
     elif (iCount < 20):
         iCount = iCount + 1

@@ -9,13 +9,13 @@ input.onButtonPressed(Button.A, function on_button_pressed_a() {
 let current_WindDirection_List = ""
 let current_WindSpeed = 0
 let tempC = 0
-let TurnLoggingOnOff = false
+let TurnLoggingOnOff = true
 let szLine = ""
 // serial.redirect_to_usb()
 serial.redirect(SerialPin.P15, SerialPin.P14, BaudRate.BaudRate115200)
 weatherbit.startWindMonitoring()
 weatherbit.startWeatherMonitoring()
-TurnLoggingOnOff = true
+TurnLoggingOnOff = false
 /** Note: If "???" is displayed, direction is unknown! */
 let doLog = false
 let iCount = 0
@@ -29,7 +29,7 @@ function on_forever() {
     
     //  -------- wind --------
     current_WindSpeed = weatherbit.windSpeed() * 3600 / 1000
-    if (current_WindSpeed > 5.0) {
+    if (current_WindSpeed > 0.5) {
         doLog = true
     } else if (iCount < 20) {
         iCount = iCount + 1
